@@ -1,0 +1,50 @@
+type Publication @entity {
+  id: ID! # publicationId as string or hex
+  publicationId: BigInt! # maintain for querying with < and > oeprators?
+  hash: String!
+  author: String!
+  topicId: String!
+  publishDate: BigInt!
+  # jurors: [String]!
+}
+
+type Topic @entity {
+  id: ID! # topicId
+  priceToPublish: BigInt!
+  priceToBeJuror: BigInt!
+  authorReward: BigInt!
+  jurorReward: BigInt!
+  commitPhaseDuration: BigInt!
+  revealPhaseDuration: BigInt!
+  jurorQuantity: BigInt!
+}
+
+type Juror @entity {
+  id: ID! # address
+  topics: [String]!
+  publicationIds: [BigInt]!
+  currentPublicationIds: [BigInt]!
+}
+
+type Voting @entity {
+  id: ID! # publicationId as string or hex
+  publicationId: BigInt! # maintain for querying with < and > oeprators?
+  withdrawn: Boolean!
+  voteCounter: [BigInt]!
+  winningVote: VoteValue!
+}
+
+type Vote @entity {
+  id: ID! # juror address @ publicationId
+  juror: String!
+  publicationId: BigInt!
+  value: VoteValue!
+  justification: String!
+}
+
+enum VoteValue {
+  NONE
+  TRUE
+  FALSE
+  UNCLASIFIED
+}

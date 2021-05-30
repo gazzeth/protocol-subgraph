@@ -1,3 +1,10 @@
+enum VoteValue {
+  NONE
+  TRUE
+  FALSE
+  UNQUALIFIED
+}
+
 type Publication @entity {
   id: ID! # publicationId as string or hex
   publicationId: BigInt! # maintain for querying with < and > oeprators?
@@ -10,6 +17,7 @@ type Publication @entity {
 
 type Topic @entity {
   id: ID! # topicId
+  founder: String!
   priceToPublish: BigInt!
   priceToBeJuror: BigInt!
   authorReward: BigInt!
@@ -28,7 +36,7 @@ type Juror @entity {
 
 type Voting @entity {
   id: ID! # publicationId as string or hex
-  publicationId: BigInt! # maintain for querying with < and > oeprators?
+  publicationId: BigInt!
   withdrawn: Boolean!
   voteCounter: [BigInt]!
   winningVote: VoteValue!
@@ -40,11 +48,5 @@ type Vote @entity {
   publicationId: BigInt!
   value: VoteValue!
   justification: String!
-}
-
-enum VoteValue {
-  NONE
-  TRUE
-  FALSE
-  UNCLASIFIED
+  penalized: Boolean!
 }

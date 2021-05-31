@@ -8,9 +8,9 @@ dataSources:
     name: Protocol Ropsten V1
     network: ropsten
     source:
-      address: '0xFa69eEf3065143ef233aA25f02beAA96d3B8BA99'
+      address: '0x56908e5B870aD339F90332f4DA4470953365cC9E'
       abi: Protocol
-      startBlock: 10340706
+      startBlock: 10343538
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4

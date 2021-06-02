@@ -20,7 +20,7 @@ type Voting @entity {
   withdrawn: Boolean!
   voteCounter: [BigInt]!
   winningVote: VoteValue!
-  votes: [Vote!]!
+  votes: [Vote!]! @derivedFrom(field: "voting")
 }
 
 type Vote @entity {

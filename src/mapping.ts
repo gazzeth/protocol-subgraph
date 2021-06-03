@@ -17,10 +17,10 @@ enum VoteValue {
   UNQUALIFIED = 3,
 }
 
-const PROTOCOL_ADDRESS = Address.bind("0x92Fba6413071183583a1d6125656D04437b1320f");
-const PROTOCOL = Protocol.bind(PROTOCOL_ADDRESS);
-const ZERO_BIG_INT = BigInt.fromI32(0);
-const ONE_BIG_INT = BigInt.fromI32(1);
+let PROTOCOL_ADDRESS = Address.fromString("0x92Fba6413071183583a1d6125656D04437b1320f");
+let PROTOCOL = Protocol.bind(PROTOCOL_ADDRESS);
+let ZERO_BIG_INT = BigInt.fromI32(0);
+let ONE_BIG_INT = BigInt.fromI32(1);
 
 export function handleTopicCreation(event: TopicCreation): void {
   let topic = new Topic(event.params._topicId.toString());
@@ -52,8 +52,11 @@ export function handleJurorSubscription(event: JurorTopicSubscription): void {
   jurorSubscription.times = event.params._times;
   jurorSubscription.save();
   let topic = Topic.load(topicId);
-  topic.selectableJurorsQuantity = BigInt.fromI32(PROTOCOL.getSelectableJurors(topic.id).length);
-  topic.save();
+  let selectableJurors = PROTOCOL.try_getSelectableJurors(topic.id);
+  if (!selectableJurors.reverted) {
+    topic.selectableJurorsQuantity = BigInt.fromI32(selectableJurors.value.length);
+    topic.save();
+  }
 }
 
 export function handlePublicationSubmission(event: PublicationSubmission): void {
@@ -70,8 +73,10 @@ export function handlePublicationSubmission(event: PublicationSubmission): void 
   voting.withdrawn = false;
   voting.voteCounters = [ZERO_BIG_INT, ZERO_BIG_INT, ZERO_BIG_INT, ZERO_BIG_INT];
   voting.winningVote = VoteValue.NONE;
-  event.params._jurors.forEach(jurorAddress => {
-    let jurorId = jurorAddress.toHexString();
+  voting.jurors = [];
+  let jurors = event.params._jurors;
+  for (let i = 0; i < jurors.length; i++) {
+    let jurorId = jurors[i].toHexString();
     voting.jurors.push(jurorId);
     let vote = new Vote(getVoteId(jurorId, publicationId));
     vote.voting = publicationId;
@@ -79,11 +84,14 @@ export function handlePublicationSubmission(event: PublicationSubmission): void 
     vote.value = VoteValue.NONE;
     vote.penalized = false;
     vote.save();
-  });
+  }
   voting.save();
   let topic = Topic.load(event.params._topicId.toString());
-  topic.selectableJurorsQuantity = BigInt.fromI32(PROTOCOL.getSelectableJurors(topic.id).length);
-  topic.save();
+  let selectableJurors = PROTOCOL.try_getSelectableJurors(topic.id);
+  if (!selectableJurors.reverted) {
+    topic.selectableJurorsQuantity = BigInt.fromI32(selectableJurors.value.length);
+    topic.save();
+  }
 }
 
 export function handleVoteCommitment(event: VoteCommitment): void {
@@ -112,16 +120,20 @@ export function handleWithdrawal(event: Withdrawal): void {
   voting.save();
   let publication = Publication.load(event.params._publicationId.toHexString());
   let topic = Topic.load(publication.topic);
-  topic.selectableJurorsQuantity = BigInt.fromI32(PROTOCOL.getSelectableJurors(topic.id).length);
-  topic.save();
-  voting.jurors.forEach(jurorId => {
-    let jurorSubscription = JurorSubscription.load(getJurorSubscriptionId(jurorId, topic.id));
-    let jurorVote = Vote.load(getVoteId(jurorId, publication.id));
-    if (!jurorWasRewarded(voting, jurorVote) && jurorSubscription.times !== ZERO_BIG_INT) {
+  let selectableJurors = PROTOCOL.try_getSelectableJurors(topic.id);
+  if (!selectableJurors.reverted) {
+    topic.selectableJurorsQuantity = BigInt.fromI32(selectableJurors.value.length);
+    topic.save();
+  }
+  let jurorIds = voting.jurors;
+  for (let i = 0; i < jurorIds.length; i++) {
+    let jurorSubscription = JurorSubscription.load(getJurorSubscriptionId(jurorIds[i], topic.id));
+    let jurorVote = Vote.load(getVoteId(jurorIds[i], publication.id));
+    if (!jurorWasRewarded(voting!, jurorVote!) && jurorSubscription.times !== ZERO_BIG_INT) {
       jurorSubscription.times = jurorSubscription.times.minus(ONE_BIG_INT);
       jurorSubscription.save();
     }
-  });
+  }
 }
 
 function jurorWasRewarded(voting: Voting, jurorVote: Vote): boolean {

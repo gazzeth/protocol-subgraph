@@ -42,17 +42,17 @@ type Topic @entity {
   revealPhaseDuration: BigInt!
   jurorQuantity: BigInt!
   selectableJurorsQuantity: BigInt!
-  suscriptions: [JurorSuscriptions!]! @derivedFrom(field: "topic")
+  suscriptions: [JurorSuscription!]! @derivedFrom(field: "topic")
   publications: [Publication!]! @derivedFrom(field: "topic")
 }
 
 type Juror @entity {
   id: ID! # `${jurorAddress}`
-  suscriptions: [JurorSuscriptions]! @derivedFrom(field: "juror")
+  suscriptions: [JurorSuscription]! @derivedFrom(field: "juror")
   votes: [Vote!]! @derivedFrom(field: "juror")
 }
 
-type JurorSuscriptions @entity {
+type JurorSuscription @entity {
   id: ID! # `${jurorAddress}@${topicId}`
   juror: Juror!
   topic: Topic!

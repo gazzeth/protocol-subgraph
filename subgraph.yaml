@@ -21,7 +21,7 @@ dataSources:
         - Vote
         - Topic
         - Juror
-        - JurorSuscription
+        - JurorSubscription
       abis:
         - name: Protocol
           file: ./abis/Protocol.json

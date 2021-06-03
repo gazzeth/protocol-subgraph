@@ -1,10 +1,3 @@
-enum VoteValue {
-  NONE
-  TRUE
-  FALSE
-  UNQUALIFIED
-}
-
 type Publication @entity {
   id: ID! # `${publicationId.toHexString}`
   hash: String!
@@ -18,8 +11,9 @@ type Voting @entity {
   id: ID! # `${publicationId.toHexString}`
   publication: Publication!
   withdrawn: Boolean!
-  voteCounter: [BigInt!]!
-  winningVote: VoteValue!
+  voteCounters: [BigInt!]!
+  winningVote: Int!
+  jurors: [Juror!]!
   votes: [Vote!]! @derivedFrom(field: "voting")
 }
 
@@ -28,7 +22,7 @@ type Vote @entity {
   voting: Voting!
   juror: Juror!
   commitment: String
-  value: VoteValue!
+  value: Int!
   justification: String
   penalized: Boolean!
 }
@@ -41,7 +35,7 @@ type Topic @entity {
   jurorReward: BigInt!
   commitPhaseDuration: BigInt!
   revealPhaseDuration: BigInt!
-  jurorQuantity: BigInt!
+  # jurorQuantity: BigInt!
   selectableJurorsQuantity: BigInt!
   subscriptions: [JurorSubscription!]! @derivedFrom(field: "topic")
   publications: [Publication!]! @derivedFrom(field: "topic")

@@ -1,5 +1,5 @@
 specVersion: 0.0.2
-description: Gazzeth Protocol # TODO: Update with a better description
+description: Decentralized news platform against misinformation
 repository: https://github.com/gazzeth/protocol-subgraph
 schema:
   file: ./schema.graphql

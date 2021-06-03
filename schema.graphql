@@ -24,7 +24,7 @@ type Voting @entity {
 }
 
 type Vote @entity {
-  id: ID! # `${jurorAddress}@${votingId.toHexString}`; votingId == publicationId
+  id: ID! # `${jurorAddress}@${publicationId.toHexString}`
   voting: Voting!
   juror: Juror!
   commitment: String

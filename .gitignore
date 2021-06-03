@@ -65,3 +65,6 @@ generated/
 
 # VS Code
 .vscode/
+
+# Build
+build/

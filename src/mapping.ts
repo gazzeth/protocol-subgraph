@@ -74,11 +74,11 @@ export function handlePublicationSubmission(event: PublicationSubmission): void 
   voting.withdrawn = false;
   voting.voteCounters = [ZERO_BIG_INT, ZERO_BIG_INT, ZERO_BIG_INT, ZERO_BIG_INT];
   voting.winningVote = VoteValue.NONE;
-  voting.jurors = [];
+  let votingJurors: string[] = [];
   let jurors = event.params._jurors;
   for (let i = 0; i < jurors.length; i++) {
     let jurorId = jurors[i].toHexString();
-    voting.jurors.push(jurorId);
+    votingJurors.push(jurorId);
     let vote = new Vote(getVoteId(jurorId, publicationId));
     vote.voting = publicationId;
     vote.juror = jurorId;
@@ -86,6 +86,7 @@ export function handlePublicationSubmission(event: PublicationSubmission): void 
     vote.penalized = false;
     vote.save();
   }
+  voting.jurors = votingJurors;
   voting.save();
   let topic = Topic.load(event.params._topicId.toString());
   let selectableJurors = PROTOCOL.try_getSelectableJurors(topic.id);

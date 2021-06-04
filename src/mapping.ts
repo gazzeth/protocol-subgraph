@@ -41,6 +41,7 @@ export function handleJurorSubscription(event: JurorTopicSubscription): void {
   if (juror == null) {
     juror = new Juror(jurorId);
   }
+  juror.save();
   let topicId = event.params._topicId.toString();
   let jurorSubscriptionId = getJurorSubscriptionId(jurorId, topicId);
   let jurorSubscription = JurorSubscription.load(jurorSubscriptionId);
@@ -141,9 +142,9 @@ function jurorWasRewarded(voting: Voting, jurorVote: Vote): boolean {
 }
 
 function getVoteId(jurorId: string, publicationId: string): string {
-  return `${jurorId}@${publicationId}`;
+  return jurorId.concat("@").concat(publicationId);
 }
 
 function getJurorSubscriptionId(jurorId: string, topicId: string): string {
-  return `${jurorId}@${topicId}`;
+  return jurorId.concat("@").concat(topicId);
 }

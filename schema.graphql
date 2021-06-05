@@ -26,6 +26,7 @@ type Vote @entity {
   value: Int!
   justification: String
   penalized: Boolean!
+  withdrawn: Boolean!
 }
 
 type Topic @entity {

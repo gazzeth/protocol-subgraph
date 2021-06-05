@@ -52,11 +52,9 @@ export function handleJurorSubscription(event: JurorTopicSubscription): void {
   jurorSubscription.times = event.params._times;
   jurorSubscription.save();
   let topic = Topic.load(topicId);
-  let selectableJurors = PROTOCOL.try_getSelectableJurors(topic.id);
-  if (!selectableJurors.reverted) {
-    topic.selectableJurorsQuantity = BigInt.fromI32(selectableJurors.value.length);
-    topic.save();
-  }
+  let selectableJurors = PROTOCOL.getSelectableJurors(topic.id);
+  topic.selectableJurorsQuantity = BigInt.fromI32(selectableJurors.length);
+  topic.save();
 }
 
 export function handlePublicationSubmission(event: PublicationSubmission): void {
@@ -85,16 +83,15 @@ export function handlePublicationSubmission(event: PublicationSubmission): void 
     vote.juror = jurorId;
     vote.value = VoteValue.NONE;
     vote.penalized = false;
+    vote.withdrawn = false;
     vote.save();
   }
   voting.jurors = votingJurors;
   voting.save();
   let topic = Topic.load(event.params._topicId.toString());
-  let selectableJurors = PROTOCOL.try_getSelectableJurors(topic.id);
-  if (!selectableJurors.reverted) {
-    topic.selectableJurorsQuantity = BigInt.fromI32(selectableJurors.value.length);
-    topic.save();
-  }
+  let selectableJurors = PROTOCOL.getSelectableJurors(topic.id);
+  topic.selectableJurorsQuantity = BigInt.fromI32(selectableJurors.length);
+  topic.save();
 }
 
 export function handleVoteCommitment(event: VoteCommitment): void {
@@ -123,11 +120,9 @@ export function handleWithdrawal(event: Withdrawal): void {
   voting.save();
   let publication = Publication.load(event.params._publicationId.toHexString());
   let topic = Topic.load(publication.topic);
-  let selectableJurors = PROTOCOL.try_getSelectableJurors(topic.id);
-  if (!selectableJurors.reverted) {
-    topic.selectableJurorsQuantity = BigInt.fromI32(selectableJurors.value.length);
-    topic.save();
-  }
+  let selectableJurors = PROTOCOL.getSelectableJurors(topic.id);
+  topic.selectableJurorsQuantity = BigInt.fromI32(selectableJurors.length);
+  topic.save();
   let jurorIds = voting.jurors;
   for (let i = 0; i < jurorIds.length; i++) {
     let jurorSubscription = JurorSubscription.load(getJurorSubscriptionId(jurorIds[i], topic.id));
@@ -136,6 +131,8 @@ export function handleWithdrawal(event: Withdrawal): void {
       jurorSubscription.times = jurorSubscription.times.minus(ONE_BIG_INT);
       jurorSubscription.save();
     }
+    jurorVote.withdrawn = true;
+    jurorVote.save();
   }
 }
 

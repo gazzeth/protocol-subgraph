@@ -8,9 +8,9 @@ dataSources:
     name: Protocol Ropsten V0
     network: ropsten
     source:
-      address: '0x92Fba6413071183583a1d6125656D04437b1320f'
+      address: '0x5De246E6FA46aA928B092F97dc0CA554b640D3AB'
       abi: Protocol
-      startBlock: 10353988
+      startBlock: 10380085
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.4
@@ -26,11 +26,11 @@ dataSources:
         - name: Protocol
           file: ./abis/Protocol.json
       eventHandlers:
-        - event: TopicCreation(indexed string,uint256,uint256,uint256,uint256,uint256,uint256)
+        - event: TopicCreation(indexed string,string,uint256,uint256,uint256,uint256,uint256,uint256)
           handler: handleTopicCreation
-        - event: JurorSubscription(indexed address,indexed string,uint256)
+        - event: JurorSubscription(indexed address,indexed string,string,uint256)
           handler: handleJurorSubscription
-        - event: PublicationSubmission(indexed uint256,indexed address,indexed string,address[],string,uint256)
+        - event: PublicationSubmission(indexed uint256,indexed address,indexed string,string,address[],string,uint256)
           handler: handlePublicationSubmission
         - event: VoteCommitment(indexed address,indexed uint256,bytes32)
           handler: handleVoteCommitment

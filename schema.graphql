@@ -10,6 +10,7 @@ type Publication @entity {
 type Voting @entity {
   id: ID! # `${publicationId.toHexString}`
   publication: Publication!
+  topic: Topic!
   withdrawn: Boolean!
   voteCounters: [BigInt!]!
   winningVote: Int!
@@ -35,10 +36,10 @@ type Topic @entity {
   jurorReward: BigInt!
   commitPhaseDuration: BigInt!
   revealPhaseDuration: BigInt!
-  # jurorQuantity: BigInt!
   selectableJurorsQuantity: BigInt!
   subscriptions: [JurorSubscription!]! @derivedFrom(field: "topic")
   publications: [Publication!]! @derivedFrom(field: "topic")
+  votings: [Voting!]! @derivedFrom(field: "topic")
 }
 
 type Juror @entity {

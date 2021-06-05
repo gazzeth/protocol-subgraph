@@ -30,7 +30,6 @@ export function handleTopicCreation(event: TopicCreation): void {
   topic.jurorReward = event.params._jurorReward;
   topic.commitPhaseDuration = event.params._commitPhaseDuration;
   topic.revealPhaseDuration = event.params._revealPhaseDuration;
-  // topic.jurorQuantity = ZERO_BIG_INT;
   topic.selectableJurorsQuantity = ZERO_BIG_INT;
   topic.save();
 }
@@ -62,10 +61,11 @@ export function handleJurorSubscription(event: JurorTopicSubscription): void {
 
 export function handlePublicationSubmission(event: PublicationSubmission): void {
   let publicationId = event.params._publicationId.toHexString();
+  let topicId = event.params._topicId.toString();
   let publication = new Publication(publicationId);
   publication.hash = event.params._hash;
   publication.author = event.params._author.toHexString();
-  publication.topic = event.params._topicId.toString();
+  publication.topic = topicId;
   publication.publishDate = event.params._publishDate;
   publication.voting = publicationId;
   publication.save();
@@ -74,6 +74,7 @@ export function handlePublicationSubmission(event: PublicationSubmission): void 
   voting.withdrawn = false;
   voting.voteCounters = [ZERO_BIG_INT, ZERO_BIG_INT, ZERO_BIG_INT, ZERO_BIG_INT];
   voting.winningVote = VoteValue.NONE;
+  voting.topic = topicId;
   let votingJurors: string[] = [];
   let jurors = event.params._jurors;
   for (let i = 0; i < jurors.length; i++) {
